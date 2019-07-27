@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}<a href="{{url_for('export' , cid=collectionid)}}" >Export</a>
+<div class="card mb-3">
+          <div class="card-header">
+            <i class="fas fa-table"></i>
+            Notebook defaulters list</div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>Admno</th>
+                    <th>Student name</th>
+                    <th>Status</th>
+                      <th>Action</th>
+
+                  </tr>
+                </thead>
+                  <tbody>
+                 {% for col in defaulters %}
+                 <tr><td>{{col.admno}}</td><td>{{col.name}}</td><td>{{col.status}}</td><td><a href="{{url_for('removeDefaulter' ,id =col.id)}}">Remove</a></td></tr>
+                 {% endfor %}
+                  </tbody>
+              </table>
+            </div>
+          </div>
+</div>
+{% endblock %}

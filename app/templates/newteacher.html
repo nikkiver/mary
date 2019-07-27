@@ -1,0 +1,35 @@
+{%  extends "base.html" %}
+
+{% block content %}
+<div class="container">
+<div class="card card-login mx-auto mt-5"">
+    <div class="card-header">
+         <i class="fas fa-table"></i>
+            Add new Teacher</div>
+
+        <div class="card-body">
+                        <form method="post"  action="\teachers">
+                  {{form.hidden_tag()}}
+                     <P>
+                         {{form.name.label}}
+                         {{form.name(class_="form-control")}}
+                     </P>
+                    <P>
+                         {{form.initials.label}}
+                         {{form.initials(class_="form-control")}}
+                     </P>
+                    <P>
+                         {{form.dob.label}}
+                         {{form.dob(class_="form-control")}}
+                     </P>
+                    <p>
+                        {{form.submit()}}
+                    </p>
+                </form>
+
+        </div>
+</div>
+</div>
+
+</div>
+{% endblock %}

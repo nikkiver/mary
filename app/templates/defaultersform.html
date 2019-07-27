@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+        <form method="POST"  action="\defaulters\{{collection.id}}">
+        {{form.hidden_tag()}}
+
+          <div class="table-responsive">
+                          <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                              <tr>
+                                <th>Admno</th>
+                                <th>Name</th>
+                                <th>Status</th>
+
+                              </tr>
+                            </thead>
+                              <tbody>
+                         {% for p in form.defaulters %}
+                            <tr><td>{{p.form.admno}}</td><td>{{p.form.name}}</td>{% for subfield in p.form.status %}
+
+                            <td>{{ subfield }}</td>
+                            <td>{{ subfield.label }}</td>
+
+                    {% endfor %}</td><td></td></tr>
+                    {% endfor %}
+                              </tbody>
+                   </table>
+         </div>
+     <p>{{form.submit()}}</p>
+</form>
+
+{% endblock %}

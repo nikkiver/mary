@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{%  block content %}
+ <div class="container">
+{% if form %}
+<div class=" card card-login mx-auto mt-5">
+          <div class="card-header">
+            <i class="fas fa-table"></i>
+            Add new Subject</div>
+       <div class="card-body">
+
+            <form method="POST" action="/subjects">
+                {{ form.hidden_tag() }}
+                <p>
+                    {{form.title.label}}
+                    {{form.title(class_="form-control")}}
+                </p>
+                <p>{{form.submit}}</p>
+            </form>
+       </div>
+    </div>
+   {% endif %}
+
+{% if subjects %}
+<h3>Subject list</h3>
+<table>
+
+    {% for s in subjects %}
+    <tr><td>{{ s.title }}</td><td><a href="/subject/{{s.id}}" >remove</a></td>
+    {% endfor %}
+</table>
+ {% endif %}
+{% endblock %}
+     </div>

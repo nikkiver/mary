@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Collection list</h2>
+<div class="card mb-3">
+          <div class="card-header">
+            <i class="fas fa-table"></i>
+            Teachers list</div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>Standard</th>
+                    <th>Collection date</th>
+                    <th>Description</th>
+                      <th>Action</th>
+
+                  </tr>
+                </thead>
+                    {% for col in collections %}
+
+                    <tr><td>{{col.standard}}</td><td>{{col.collectiondate}}</td><td>{{col.description}}</td><td><a href="\defaulters\{{col.id}}" >Add defaulters</a>/<a href="\showDefaulters\{{col.id}}" >View defaulters</a>/<a href="\deleteCollection\{{col.id}}">Delete</a></td></tr>
+                    {% endfor %}
+                </table>
+            </div>
+          </div>
+</div>
+{% endblock %}
