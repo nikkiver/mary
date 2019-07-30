@@ -11,6 +11,7 @@
                 <thead>
                   <tr>
                     <th>Standard</th>
+                      <th>Subject</th>
                     <th>Collection date</th>
                     <th>Description</th>
                       <th>Action</th>
@@ -19,7 +20,7 @@
                 </thead>
                     {% for col in collections %}
 
-                    <tr><td>{{col.standard}}</td><td>{{col.collectiondate}}</td><td>{{col.description}}</td><td><a href="\defaulters\{{col.id}}" >Add defaulters</a>/<a href="\showDefaulters\{{col.id}}" >View defaulters</a>/<a href="\deleteCollection\{{col.id}}">Delete</a></td></tr>
+                    <tr><td>{{col.standard}}</td><td>{{col.subject}}</td><td>{{col.collectiondate}}</td><td>{{col.description}}</td><td><a href="\defaulters\{{col.id}}" >Add defaulters</a>/<a href="\showDefaulters\{{col.id}}" >View defaulters</a>/<a href="\deleteCollection\{{col.id}}">Delete</a></td></tr>
                     {% endfor %}
                 </table>
             </div>

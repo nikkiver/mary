@@ -20,12 +20,25 @@
 
           <a class="nav-link" href="{{url_for('addSubject')}}">Add Subject</a>
       </li>
+        <li class="nav-item active">
+
+          <a class="nav-link" href="{{url_for('addTeacherSubject')}}">Add My Subject</a>
+      </li>
+         <li class="nav-item active">
+
+          <a class="nav-link" href="{{url_for('viewTeacherSubjects')}}"> My Subject</a>
+      </li>
+        {% if role == 'ADMIN' %}
       <li class="nav-item">
        <a class="nav-link" href="{{url_for('registerTeacher')}}">Add Teacher</a>
       </li>
+        {% endif %}
+      <li class="nav-item">
+        <a class="nav-link" href="{{url_for('studentReport')}}">Student Report</a>
+       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Dropdown
+          Reports
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           <a class="dropdown-item" href="#">Action</a>
@@ -42,7 +55,7 @@
       <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
     </form>
-       <a href="{{url_for('logout')}}">Logout</a>
+       <a class="btn btn-primary" href="{{url_for('logout')}}">Logout</a>
   </div>
 </nav>
 

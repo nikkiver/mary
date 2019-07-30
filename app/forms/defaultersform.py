@@ -6,4 +6,4 @@ from wtforms.validators import DataRequired
 class DefaultersForm(FlaskForm):
     admno = StringField('Admno' ,validators=[DataRequired()])
     name  = StringField('Student name' , validators=[DataRequired()])
-    status =RadioField('Status' , choices=[('AB','ABSENT'),('NS','NOT SUBMITTED'),('SB' ,'SUBMITTED') ])
+    status =RadioField('Status' , choices=[('AB','ABSENT'),('NS','NOT SUBMITTED'),('INC' ,'INCOMPLETE WORK') ])

@@ -5,7 +5,7 @@
 <div class=" card card-login mx-auto mt-5">
           <div class="card-header">
             <i class="fas fa-table"></i>
-            Add new Subject</div>
+            Add new Subject /<a href="{{url_for('subjectList')}}">View Subjects</a> </div>
        <div class="card-body">
 
             <form method="POST" action="/subjects">
@@ -21,13 +21,28 @@
    {% endif %}
 
 {% if subjects %}
-<h3>Subject list</h3>
-<table>
-
-    {% for s in subjects %}
-    <tr><td>{{ s.title }}</td><td><a href="/subject/{{s.id}}" >remove</a></td>
-    {% endfor %}
-</table>
+<div class="card mb-3">
+          <div class="card-header">
+            <i class="fas fa-table"></i>
+            Subject list</div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                  <tbody>
+                {% for s in subjects %}
+                <tr><td>{{ s.title }}</td><td><a href="/subject/{{s.id}}" >remove</a></td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            </div>
+          </div>
+</div>
  {% endif %}
 {% endblock %}
      </div>

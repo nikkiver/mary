@@ -6,6 +6,8 @@ from app.forms.subjectform import  SubjectForm
 from app.forms.collectionform import CollectionForm
 from app.forms.DefaultersListForm import  DefaultersListForm
 from app.forms.defaultersform import DefaultersForm
+from app.forms.studentsearchfrom import StudentSearchForm
+from app.forms.classsubjectselectorform import StandardSubjectSelectorForm
 from app.models import  User
 from app.models import  Teacher
 from app.models import Subject
@@ -14,11 +16,14 @@ from app.models import  Defaulter
 
 from .middleware import loginrequired
 import pandas as pd
+from sqlalchemy.sql import func
+from sqlalchemy import text
 from app import  app , db
 
 @app.route("/" , methods =['GET'])
 def index():
-    return redirect('/registeruser')
+    return redirect('/login')
+    #return  render_template('home.html')
 
 
 @app.route('/registeruser' , methods=['GET','POST'])
@@ -29,7 +34,7 @@ def registerUser():
         usr = User(username=userForm.username.data , password = userForm.password.data)
         db.session.add(usr)
         db.session.commit();
-        return "Registration successful " , 200
+        return redirect(url_for('login'))
 
     return  render_template('newuser.html' , form =userForm )
 
@@ -41,7 +46,8 @@ def login():
     if logf.validate_on_submit():
         usr = User.query.filter_by(username = logf.username.data ,password = logf.password.data).limit(1).all()
         session['username']=usr[0].username
-        return render_template('dashboard.html' , username=usr[0].username)
+        session['role'] =usr[0].role
+        return render_template('dashboard.html' , username=usr[0].username  , role =usr[0].role)
     return render_template('login.html' , form=logf)
 
 @app.route('/logout')
@@ -64,6 +70,26 @@ def registerTeacher():
 
     return render_template("newteacher.html" , form=teacher)
 
+@app.route('/teachersregistration' , methods=['GET', 'POST'])
+def teacherRegistration():
+    teacher = TeacherForm()
+    if teacher.validate_on_submit():
+        usr = User(username = teacher.initials.data , password= teacher.password.data, role='TEACHER' , status='ACTIVE')
+        db.session.add(usr)
+        db.session.commit()
+        tchrMod = Teacher(name =teacher.name.data , initials = teacher.initials.data , pno=teacher.pno.data if teacher.pno.data else '' , dob = teacher.dob.data if teacher.dob.data else '', user_id = usr.id)
+        db.session.add(tchrMod)
+        db.session.commit()
+        if tchrMod.id:
+            return "Teacher registered" ,200
+
+    return render_template('teacherregistration.html', form = teacher)
+
+@app.route('/teacherslist' , methods = ['GET'])
+@loginrequired
+def listTeachers():
+    tchrs = Teacher.query.all()
+    return render_template("teacherslist.html", teachers=tchrs)
 
 @app.route('/subjects' ,methods=['GET', 'POST'])
 @loginrequired
@@ -78,6 +104,39 @@ def addSubject():
     return render_template('subjectlist.html' , form=subjc)
 
 
+@app.route('/addTeacherSubject' , methods = ['GET', 'POST'])
+@loginrequired
+def addTeacherSubject():
+    stdsub = StandardSubjectSelectorForm()
+
+    if stdsub.validate_on_submit():
+        tchr = Teacher.query.filter_by(initials = session['username']).first()
+        if tchr.subjects:
+            tchr.subjects = tchr.subjects+","+stdsub.standard.data+"-"+stdsub.section.data+":"+stdsub.subject.data
+            print(tchr.subjects)
+        else :
+            #tchr.subjects=""+stdsub.standard.data).join("-").join(stdsub.section.data).join(":").join(stdsub.subject.data)
+            tchr.subjects = "" + stdsub.standard.data + "-" + stdsub.section.data + ":" + stdsub.subject.data
+            print(tchr.subjects)
+
+        db.session.commit();
+        #return "Subject addeds succesfully" , 200
+        return render_template('teacher-standard-subject.html', form=stdsub, message=None , subjects=tchr.subjects.split(","))
+    return  render_template('teacher-standard-subject.html' , form=stdsub , message=None)
+
+@app.route('/viewTeacherSubjects' , methods=['GET' , 'POST'])
+def viewTeacherSubjects():
+    tchr = Teacher.query.filter_by(initials=session['username']).first()
+    return render_template('teacher-standard-subject.html', form=None , message=None, subjects=tchr.subjects.split(","))
+
+
+
+
+@app.route('/subjectlist' , methods=['GET'])
+def subjectList():
+    subjects = Subject.query.all()
+    return render_template('subjectlist.html', subjects=subjects, form=None)
+
 
 @app.route('/subject/<int:id>' , methods =['GET' ,'DELETE'])
 def removeSubject(id):
@@ -90,8 +149,9 @@ def removeSubject(id):
 @app.route('/collections' , methods =['GET' ,'POST'])
 def showCollectionForm():
     colform = CollectionForm()
+
     if colform.validate_on_submit():
-        colrec= Collectionrecord(description=colform.description.data , collectiondate = colform.doc.data , standard=colform.standard.data , teacherinitials=colform.teacher.data)
+        colrec= Collectionrecord(description=colform.description.data , collectiondate = colform.doc.data , standard=colform.standard.data , teacherinitials=colform.teacher.data , subject = colform.subjects.data)
         db.session.add(colrec)
         db.session.commit();
         cols =Collectionrecord.query.all()
@@ -107,8 +167,9 @@ def deleteCollection(cid):
     return render_template('collectionlist.html',collections=Collectionrecord.query.all())
 
 @app.route('/collectionrecord' , methods=['GET'])
+@loginrequired
 def  showCollectionRecords():
-    colrec = Collectionrecord.query.all()
+    colrec = Collectionrecord.query.filter_by(teacherinitials =session['username']).all()
     return render_template('collectionlist.html' , collections=colrec)
 
 
@@ -204,5 +265,31 @@ def export(cid):
     print(str(len(data)))
     writer.save()
     return send_file('g://DEFL.xlsx', as_attachment=True)
+
+
+@app.route('/search' , methods=['GET' ,'POST'])
+def studentReport():
+    stu = StudentSearchForm()
+
+    if stu.validate_on_submit():
+        result1 = db.engine.execute(text("select collectionrecord.subject , collectionrecord.description as WorkDesc , collectionrecord.collectiondate , defaulter.status , GROUP_CONCAT( defaulter.name ) as Name  from collectionrecord left join defaulter on collectionrecord.id = defaulter.collection_id where defaulter.admno = :admno and collectionrecord.teacherinitials = :ti group by collectionrecord.description").execution_options(autocommit=True), admno=stu.admno.data , ti =session['username']).fetchall()
+        df1 = pd.DataFrame(result1)
+        if result1:
+            df1.columns = result1[0].keys()
+            print(df1)
+            return render_template('studentreport.html' , form=stu  , report = df1.to_html(classes="table table-bordered" ,justify="center") )
+        return render_template('studentreport.html' , form=stu ,report=None , message ="No record found for current user")
+
+
+    return render_template('studentreport.html' , form=stu  , report =None )
+
+@app.route('/subjectreport/<sub>/<std>' , methods=['GET', 'POST'])
+@loginrequired
+def subjectReport(sub , std):
+    result = db.engine.execute(text("select collectionrecord.description ,count(*) as Total , GROUP_CONCAT( defaulter.name ) as Defaluters  from collectionrecord left join defaulter on collectionrecord.id = defaulter.collection_id where collectionrecord.subject = :subject and collectionrecord.standard = :std group by collectionrecord.description").execution_options(autocommit=True), subject=sub , std=std).fetchall()
+    df = pd.DataFrame(result)
+    df.columns = result[0].keys()
+    return  render_template('subjectwisereport.html' ,  report=df.to_html(classes="table table-bordered" , justify="center") , subject=sub ,standard=std )
+
 
 

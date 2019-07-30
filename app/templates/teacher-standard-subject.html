@@ -1,0 +1,63 @@
+
+{% extends "base.html" %}
+
+
+{% block content %}
+ {% if form %}
+   <form action="/addTeacherSubject" method="POST">
+    {{form.hidden_tag()}}
+    <p>
+        {{form.standard.label}}
+        {{form.standard}}
+    </p>
+     <p>
+         {{form.section.label }}
+         {{form.section }}
+     </p>
+      <p>
+          {{form.subject.label}}
+          {{form.subject}}
+      </p>
+      <p>
+        {{form.submit}}
+    </p>
+</form>
+{% endif %}
+{% if message %}
+<h3>{{message}}</h3>
+{% endif %}
+{% if subjects %}
+<div class="card mb-3">
+    <div class="card-header">
+      <i class="fas fa-table"></i>
+      Subject report</div>
+    <div class="card-body">
+      <div class="table-responsive">
+            <!-- {{ report | safe }} -->
+          <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>Standard</th>
+                      <th>Subject</th>
+
+                      <th>Action</th>
+
+                  </tr>
+                </thead>
+              {% for s in subjects %}
+                 <tr>
+                 {% for sub in s.split(":") %}
+                  <td>{{sub}}</td>
+                 {% endfor %}
+                  <td><a href="/subjectreport/{{s.split(':')[1]}}/{{s.split(':')[0]}}">Report</a></td>
+                 </tr>
+              {% endfor %}
+          </table>
+       </div>
+     </div>
+  </div>
+{% endif %}
+
+
+
+{% endblock %}

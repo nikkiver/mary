@@ -7,7 +7,8 @@ class Teacher(db.Model):
     initials =db.Column(VARCHAR(10) )
     pno      =db.Column(VARCHAR(10) )
     dob      =db.Column(db.DateTime , nullable=False)
-
+    subjects = db.Column(VARCHAR(100) , nullable=True)
+    user_id  =db.Column(db.Integer , nullable=True)
     def __repr__(self):
         return "Teacher : {} , Initials : {}".format(self.name , self.initials)
 

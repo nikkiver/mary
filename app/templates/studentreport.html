@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form action="/search" method="POST">
+    {{form.hidden_tag()}}
+    <p>
+        {{form.admno.label}}
+        {{form.admno}}
+        {{form.submit}}
+    </p>
+</form>
+{% if message %}
+<h3>{{message}}</h3>
+{% endif %}
+{% if report %}
+<div class="card mb-3">
+    <div class="card-header">
+      <i class="fas fa-table"></i>
+      Subject report</div>
+    <div class="card-body">
+      <div class="table-responsive">
+             {{ report | safe }}
+       </div>
+     </div>
+  </div>   
+{% endif %}
+
+
+
+{% endblock %}

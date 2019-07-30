@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card mb-3">
+    <div class="card-header">
+      <i class="fas fa-table"></i>
+      {{subject}} - {{standard}} report</div>
+    <div class="card-body">
+      <div class="table-responsive">
+             {{ report | safe }}
+       </div>
+     </div>
+  </div>     
+
+{% endblock %}
